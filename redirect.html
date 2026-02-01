@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advertisement</title>
+<style>
+body { font-family: Arial; text-align: center; margin-top: 50px; }
+</style>
+</head>
+<body>
+<h2>Advertisement 1</h2>
+<img src="ad1.jpg" alt="Ad 1" style="width:80%; max-width:400px;">
+<p>Redirecting in <span id="countdown">10</span> seconds...</p>
+<script>
+let time = 10;
+let code = new URLSearchParams(window.location.search).get('c');
+
+let timer = setInterval(() => {
+    time--;
+    document.getElementById('countdown').innerText = time;
+    if(time <= 0) {
+        clearInterval(timer);
+        window.location.href = `next.html?c=${code}`;
+    }
+}, 1000);
+</script>
+</body>
+</html>
