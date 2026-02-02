@@ -3,9 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Redirecting...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body>
-  <h3>Redirecting, please wait...</h3>
+<body style="font-family:sans-serif;text-align:center;padding-top:50px;">
+
+  <h2>🔄 Redirecting, please wait...</h2>
+  <p>You will be redirected shortly</p>
+  <p id="count">5</p>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
@@ -24,20 +28,32 @@
     const db = getFirestore(app);
 
     // get short code from URL
-    const path = window.location.pathname.split("/").pop();
+    const code = window.location.pathname.split("/").pop();
 
-    if (!path) {
-      document.body.innerHTML = "Invalid link";
+    if (!code) {
+      document.body.innerHTML = "❌ Invalid link";
     } else {
-      const ref = doc(db, "links", path);
+      const ref = doc(db, "links", code);
       getDoc(ref).then((snap) => {
         if (snap.exists()) {
-          window.location.href = snap.data().url;
+          let time = 5;
+          const target = snap.data().url;
+
+          const timer = setInterval(() => {
+            time--;
+            document.getElementById("count").innerText = time;
+            if (time === 0) {
+              clearInterval(timer);
+              window.location.href = target;
+            }
+          }, 1000);
+
         } else {
           document.body.innerHTML = "❌ Link not found";
         }
       });
     }
   </script>
+
 </body>
 </html>
