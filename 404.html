@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+</head>
+<body>
+  <h3>Redirecting, please wait...</h3>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBH7Jpu4_MBl7MKJ9lz9V5I4p0fcsddPc",
+      authDomain: "mk-link-shortener.firebaseapp.com",
+      projectId: "mk-link-shortener",
+      storageBucket: "mk-link-shortener.firebasestorage.app",
+      messagingSenderId: "168409013932",
+      appId: "1:168409013932:web:28e0095f318dc7ad5d4909"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // get short code from URL
+    const path = window.location.pathname.split("/").pop();
+
+    if (!path) {
+      document.body.innerHTML = "Invalid link";
+    } else {
+      const ref = doc(db, "links", path);
+      getDoc(ref).then((snap) => {
+        if (snap.exists()) {
+          window.location.href = snap.data().url;
+        } else {
+          document.body.innerHTML = "❌ Link not found";
+        }
+      });
+    }
+  </script>
+</body>
+</html>
