@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wait Page 2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+    #ad { margin: 20px 0; }
+  </style>
+</head>
+<body>
+
+  <h2>⏳ Almost there…</h2>
+  <p>Final redirect in <span id="count">5</span> seconds</p>
+
+  <!-- CUSTOM AD PLACEHOLDER -->
+  <div id="ad">
+    <h3>Your Second Ad Here</h3>
+    <img src="https://via.placeholder.com/300x100?text=Your+Second+Ad" alt="Ad Banner">
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const target = params.get("go");
+    if (!target) {
+      document.body.innerHTML = "❌ Invalid link";
+    } else {
+      let time = 5; // 5-second countdown
+      const timer = setInterval(() => {
+        time--;
+        document.getElementById("count").innerText = time;
+        if (time === 0) {
+          clearInterval(timer);
+          window.location.href = target; // final redirect
+        }
+      }, 1000);
+    }
+  </script>
+
+</body>
+</html>
