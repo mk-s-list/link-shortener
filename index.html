@@ -1,37 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Link Shortener</title>
-<style>
-  body { font-family: Arial; text-align: center; margin-top: 50px; }
-  input, button { padding: 10px; margin: 10px; width: 80%; max-width: 300px; }
-</style>
+  <meta charset="UTF-8">
+  <title>MK Link Shortener</title>
 </head>
 <body>
-<h1>My Personal Link Shortener</h1>
-<input type="url" id="originalLink" placeholder="Enter your link here" required>
-<button onclick="shortenLink()">Shorten Link</button>
-<p id="shortLink"></p>
+  <h3>Redirecting…</h3>
 
-<script>
-function shortenLink() {
-    const original = document.getElementById('originalLink').value;
-    if(!original) return alert('Enter a link!');
-    
-    // Generate a short code
-    const code = Math.random().toString(36).substring(2,8);
-    
-    // Save to localStorage (personal use, no database needed)
-    let links = JSON.parse(localStorage.getItem('myLinks') || '{}');
-    links[code] = original;
-    localStorage.setItem('myLinks', JSON.stringify(links));
-    
-    // Show short link
-    const shortURL = `${window.location.origin}/redirect.html?c=${code}`;
-    document.getElementById('shortLink').innerHTML = `Your short link: <a href="${shortURL}" target="_blank">${shortURL}</a>`;
-}
-</script>
+  <script type="module">
+    // Firebase core
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+    // YOUR Firebase config (unchanged)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBH7Jpu4_MBl7MKJ9lz9V5I4p0fcsddPc",
+      authDomain: "mk-link-shortener.firebaseapp.com",
+      projectId: "mk-link-shortener",
+      storageBucket: "mk-link-shortener.firebasestorage.app",
+      messagingSenderId: "168409013932",
+      appId: "1:168409013932:web:28e0095f318dc7ad5d4909"
+    };
+
+    // Init Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Get short code from URL
+    const shortCode = window.location.pathname.replace("/", "");
+
+    if (!shortCode) {
+      document.body.innerHTML = "Invalid short link";
+    } else {
+      const q = query(
+        collection(db, "links"),
+        where("short", "==", shortCode)
+      );
+
+      getDocs(q)
+        .then((snap) => {
+          if (!snap.empty) {
+            const original = snap.docs[0].data().original;
+            window.location.href = original;
+          } else {
+            document.body.innerHTML = "404 - Link not found";
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          document.body.innerHTML = "Error loading link";
+        });
+    }
+  </script>
 </body>
 </html>
