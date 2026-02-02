@@ -1,15 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Redirecting...</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wait Page 1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+    #ad { margin: 20px 0; }
+  </style>
 </head>
-<body style="font-family:sans-serif;text-align:center;padding-top:50px;">
+<body>
 
-  <h2>🔄 Redirecting, please wait...</h2>
+  <h2>⏳ Please wait…</h2>
   <p>You will be redirected shortly</p>
   <p id="count">5</p>
+
+  <!-- CUSTOM AD PLACEHOLDER -->
+  <div id="ad">
+    <h3>Your Ad Here</h3>
+    <img src="https://via.placeholder.com/300x100?text=Your+Ad" alt="Ad Banner">
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
@@ -36,7 +46,7 @@
       const ref = doc(db, "links", code);
       getDoc(ref).then((snap) => {
         if (snap.exists()) {
-          let time = 5;
+          let time = 5; // 5-second countdown
           const target = snap.data().url;
 
           const timer = setInterval(() => {
@@ -44,7 +54,8 @@
             document.getElementById("count").innerText = time;
             if (time === 0) {
               clearInterval(timer);
-              window.location.href = target;
+              // Redirect to second wait page
+              window.location.href = "page2.html?go=" + encodeURIComponent(target);
             }
           }, 1000);
 
