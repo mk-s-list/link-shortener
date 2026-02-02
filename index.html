@@ -1,24 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>MK Link Shortener</title>
+  <title>Redirecting...</title>
 </head>
 <body>
-  <h3>Redirecting…</h3>
+  <h3>Redirecting, please wait...</h3>
 
   <script type="module">
-    // Firebase core
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      query,
-      where,
-      getDocs
-    } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-    // YOUR Firebase config (unchanged)
     const firebaseConfig = {
       apiKey: "AIzaSyDBH7Jpu4_MBl7MKJ9lz9V5I4p0fcsddPc",
       authDomain: "mk-link-shortener.firebaseapp.com",
@@ -28,34 +20,23 @@
       appId: "1:168409013932:web:28e0095f318dc7ad5d4909"
     };
 
-    // Init Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Get short code from URL
-    const shortCode = window.location.pathname.replace("/", "");
+    // get short code from URL
+    const path = window.location.pathname.split("/").pop();
 
-    if (!shortCode) {
-      document.body.innerHTML = "Invalid short link";
+    if (!path) {
+      document.body.innerHTML = "Invalid link";
     } else {
-      const q = query(
-        collection(db, "links"),
-        where("short", "==", shortCode)
-      );
-
-      getDocs(q)
-        .then((snap) => {
-          if (!snap.empty) {
-            const original = snap.docs[0].data().original;
-            window.location.href = original;
-          } else {
-            document.body.innerHTML = "404 - Link not found";
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          document.body.innerHTML = "Error loading link";
-        });
+      const ref = doc(db, "links", path);
+      getDoc(ref).then((snap) => {
+        if (snap.exists()) {
+          window.location.href = snap.data().url;
+        } else {
+          document.body.innerHTML = "❌ Link not found";
+        }
+      });
     }
   </script>
 </body>
