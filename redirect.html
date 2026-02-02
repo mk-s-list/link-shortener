@@ -1,29 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Advertisement</title>
-<style>
-body { font-family: Arial; text-align: center; margin-top: 50px; }
-</style>
+  <meta charset="UTF-8">
+  <title>Please wait...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body>
-<h2>Advertisement 1</h2>
-<img src="ad1.jpg" alt="Ad 1" style="width:80%; max-width:400px;">
-<p>Redirecting in <span id="countdown">10</span> seconds...</p>
-<script>
-let time = 10;
-let code = new URLSearchParams(window.location.search).get('c');
+<body style="font-family:sans-serif;text-align:center;padding-top:50px;">
+  <h2>⏳ Please wait...</h2>
+  <p>Redirecting you safely</p>
+  <p id="count">5</p>
 
-let timer = setInterval(() => {
-    time--;
-    document.getElementById('countdown').innerText = time;
-    if(time <= 0) {
+  <script>
+    let time = 5;
+    const params = new URLSearchParams(window.location.search);
+    const target = params.get("go");
+
+    const timer = setInterval(() => {
+      time--;
+      document.getElementById("count").innerText = time;
+      if (time === 0) {
         clearInterval(timer);
-        window.location.href = `next.html?c=${code}`;
-    }
-}, 1000);
-</script>
+        window.location.href = target;
+      }
+    }, 1000);
+  </script>
 </body>
 </html>
