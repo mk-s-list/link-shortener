@@ -1,16 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Redirecting...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+    #ad1, #ad2 { margin: 20px 0; }
+    .hidden { display: none; }
+    img { max-width: 100%; height: auto; }
+  </style>
 </head>
 <body>
-  <h3>Redirecting, please wait...</h3>
+
+  <h2>⏳ Redirecting, please wait...</h2>
+  <p id="message">Step 1: Wait 10 seconds</p>
+  <p id="count">10</p>
+
+  <!-- STEP 1 AD: Replace href + src as needed -->
+  <div id="ad1">
+    <h3>Ad Slot 1</h3>
+    <a href="https://t.me/otc_filter_bot" target="_blank">
+      <img src="https://i.ibb.co/VW7Gmf3W/IMG-20260125-162844-987.jpg" alt="Ad Banner 1">
+    </a>
+  </div>
+
+  <!-- STEP 2 AD: Replace href + src as needed -->
+  <div id="ad2" class="hidden">
+    <h3>Ad Slot 2</h3>
+    <a href="https://otcoffix007.blogspot.com" target="_blank">
+      <img src="https://i.ibb.co/VW7Gmf3W/IMG-20260125-162844-987.jpg" alt="Ad Banner 2">
+    </a>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
+    // 🔹 Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyDBH7Jpu4_MBl7MKJ9lz9V5I4p0fcsddPc",
       authDomain: "mk-link-shortener.firebaseapp.com",
@@ -23,21 +50,55 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // get short code from URL
-    const path = window.location.pathname.split("/").pop();
-
-    if (!path) {
-      document.body.innerHTML = "Invalid link";
+    // 🔹 Get short code from URL
+    const code = window.location.pathname.split("/").pop();
+    if (!code) {
+      document.body.innerHTML = "❌ Invalid link";
     } else {
-      const ref = doc(db, "links", path);
+      const ref = doc(db, "links", code);
       getDoc(ref).then((snap) => {
         if (snap.exists()) {
-          window.location.href = snap.data().url;
+          const finalURL = snap.data().url;
+
+          // 🔹 STEP 1 COUNTDOWN
+          let step1 = 10;
+          const countEl = document.getElementById("count");
+          const messageEl = document.getElementById("message");
+          const ad1El = document.getElementById("ad1");
+          const ad2El = document.getElementById("ad2");
+
+          const step1Timer = setInterval(() => {
+            step1--;
+            countEl.innerText = step1;
+            if (step1 === 0) {
+              clearInterval(step1Timer);
+
+              // 🔹 STEP 2 COUNTDOWN
+              messageEl.innerText = "Step 2: Wait 10 seconds";
+              countEl.innerText = "10";
+              ad1El.classList.add("hidden");
+              ad2El.classList.remove("hidden");
+
+              let step2 = 10;
+              const step2Timer = setInterval(() => {
+                step2--;
+                countEl.innerText = step2;
+                if (step2 === 0) {
+                  clearInterval(step2Timer);
+
+                  // 🔹 FINAL REDIRECT
+                  window.location.href = finalURL;
+                }
+              }, 1000);
+            }
+          }, 1000);
+
         } else {
           document.body.innerHTML = "❌ Link not found";
         }
       });
     }
   </script>
+
 </body>
 </html>
