@@ -2,29 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Wait Page 1</title>
+  <title>Redirecting...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body { font-family: sans-serif; text-align: center; padding-top: 50px; }
-    #ad { margin: 20px 0; }
+    #ad1, #ad2 { margin: 20px 0; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
 
-  <h2>⏳ Please wait…</h2>
-  <p>You will be redirected shortly</p>
-  <p id="count">5</p>
+  <h2>⏳ Redirecting, please wait...</h2>
+  <p id="message">Step 1: Wait 10 seconds</p>
+  <p id="count">10</p>
 
-  <!-- CUSTOM AD PLACEHOLDER -->
-  <div id="ad">
-    <h3>Your Ad Here</h3>
-    <img src="https://via.placeholder.com/300x100?text=Your+Ad" alt="Ad Banner">
+  <!-- CUSTOM AD PLACEHOLDER STEP 1 -->
+  <div id="ad1">
+    <h3>Ad Slot 1</h3>
+    <img src="https://ibb.co/0pWGxbyf" alt="Ad Banner 1">
+  </div>
+
+  <!-- CUSTOM AD PLACEHOLDER STEP 2 -->
+  <div id="ad2" class="hidden">
+    <h3>Ad Slot 2</h3>
+    <img src="https://via.placeholder.com/300x100?text=Your+Ad+2" alt="Ad Banner 2">
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDBH7Jpu4_MBl7MKJ9lz9V5I4p0fcsddPc",
       authDomain: "mk-link-shortener.firebaseapp.com",
@@ -37,25 +45,45 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // get short code from URL
+    // Get short code from URL
     const code = window.location.pathname.split("/").pop();
-
     if (!code) {
       document.body.innerHTML = "❌ Invalid link";
     } else {
       const ref = doc(db, "links", code);
       getDoc(ref).then((snap) => {
         if (snap.exists()) {
-          let time = 5; // 5-second countdown
-          const target = snap.data().url;
+          const finalURL = snap.data().url;
 
-          const timer = setInterval(() => {
-            time--;
-            document.getElementById("count").innerText = time;
-            if (time === 0) {
-              clearInterval(timer);
-              // Redirect to second wait page
-              window.location.href = "page2.html?go=" + encodeURIComponent(target);
+          // Step 1 countdown
+          let step1 = 10;
+          const countEl = document.getElementById("count");
+          const messageEl = document.getElementById("message");
+          const ad1El = document.getElementById("ad1");
+          const ad2El = document.getElementById("ad2");
+
+          const step1Timer = setInterval(() => {
+            step1--;
+            countEl.innerText = step1;
+            if (step1 === 0) {
+              clearInterval(step1Timer);
+              // Step 2
+              messageEl.innerText = "Step 2: Wait 10 seconds";
+              countEl.innerText = "10";
+              ad1El.classList.add("hidden");
+              ad2El.classList.remove("hidden");
+
+              let step2 = 10;
+              const step2Timer = setInterval(() => {
+                step2--;
+                countEl.innerText = step2;
+                if (step2 === 0) {
+                  clearInterval(step2Timer);
+                  // Final redirect
+                  window.location.href = finalURL;
+                }
+              }, 1000);
+
             }
           }, 1000);
 
