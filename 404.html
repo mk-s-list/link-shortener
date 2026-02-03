@@ -1,23 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
   <title>Redirecting...</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
-<h2>⏳ Redirecting, please wait...</h2>
+<h3>Redirecting, please wait…</h3>
 
 <script>
-  // Get the short code from URL
   const path = window.location.pathname;
   const code = path.split("/").pop();
 
   if (!code) {
     document.body.innerHTML = "❌ Invalid link";
   } else {
-    // Redirect to redirect.html with code as query
     window.location.replace(
       "/link-shortener/redirect.html?code=" + code
     );
