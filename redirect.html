@@ -3,102 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title>Redirecting...</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: Arial;
-      background: #0f172a;
-      color: white;
-      text-align: center;
-      padding-top: 40px;
-    }
-    img {
-      max-width: 90%;
-      border-radius: 10px;
-      margin: 20px 0;
-    }
-    .hidden { display: none; }
-    #count { font-size: 30px; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+  <h2>Redirecting, please wait...</h2>
 
-<h2>⏳ Please wait… verifying link</h2>
-<p id="step">Step 1</p>
-<p id="count">10</p>
+  <script>
+    // Get short code from URL
+    // Example: /redirect.html?c=MK06
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("c");
 
-<div id="ad1">
-  <a href="https://t.me/otc_filter_bot" target="_blank">
-    <img src="https://i.ibb.co/VW7Gmf3W/IMG-20260125-162844-987.jpg">
-  </a>
-</div>
+    // YOUR LINKS DATABASE (for now static)
+    const links = {
+      "MK06": "https://google.com",
+      "EMK06": "https://youtube.com",
+      "ABC123": "https://github.com"
+    };
 
-<div id="ad2" class="hidden">
-  <a href="https://otcoffix007.blogspot.com" target="_blank">
-    <img src="https://i.ibb.co/VW7Gmf3W/IMG-20260125-162844-987.jpg">
-  </a>
-</div>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDBH7Jpu4_MBl7MKJ9lz9V5I4p0fcsddPc",
-    authDomain: "mk-link-shortener.firebaseapp.com",
-    projectId: "mk-link-shortener",
-    storageBucket: "mk-link-shortener.firebasestorage.app",
-    messagingSenderId: "168409013932",
-    appId: "1:168409013932:web:28e0095f318dc7ad5d4909"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
-
-  if (!code) {
-    document.body.innerHTML = "❌ Invalid link";
-  } else {
-    const ref = doc(db, "links", code);
-    getDoc(ref).then(snap => {
-      if (!snap.exists()) {
-        document.body.innerHTML = "❌ Link not found";
-        return;
-      }
-
-      const finalURL = snap.data().url;
-      let time = 10;
-      const count = document.getElementById("count");
-      const step = document.getElementById("step");
-      const ad1 = document.getElementById("ad1");
-      const ad2 = document.getElementById("ad2");
-
-      const t1 = setInterval(() => {
-        time--;
-        count.innerText = time;
-        if (time === 0) {
-          clearInterval(t1);
-          ad1.classList.add("hidden");
-          ad2.classList.remove("hidden");
-          step.innerText = "Step 2";
-          time = 10;
-          count.innerText = time;
-
-          const t2 = setInterval(() => {
-            time--;
-            count.innerText = time;
-            if (time === 0) {
-              clearInterval(t2);
-              window.location.href = finalURL;
-            }
-          }, 1000);
-        }
-      }, 1000);
-    });
-  }
-</script>
-
+    if (code && links[code]) {
+      window.location.href = links[code];
+    } else {
+      document.body.innerHTML = "<h2>❌ Link not found</h2>";
+    }
+  </script>
 </body>
 </html>
