@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Short Link</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: #020617;
+      padding: 25px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,.5);
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #38bdf8;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+    #result {
+      margin-top: 15px;
+      word-break: break-all;
+    }
+    a {
+      color: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>🔗 Create Short Link</h2>
+
+  <!-- USER PASTES LONG LINK HERE -->
+  <input id="longUrl" type="url" placeholder="Paste your long link here" />
+
+  <!-- CLICK TO CREATE -->
+  <button id="btn">Shorten</button>
+
+  <!-- RESULT SHOWS HERE -->
+  <div id="result"></div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+  // 🔥 YOUR FIREBASE CONFIG (already correct)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDBH7Jpu4_MBl7MKJ9lz9V5I4p0fcsddPc",
+    authDomain: "mk-link-shortener.firebaseapp.com",
+    projectId: "mk-link-shortener",
+    storageBucket: "mk-link-shortener.firebasestorage.app",
+    messagingSenderId: "168409013932",
+    appId: "1:168409013932:web:28e0095f318dc7ad5d4909"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const btn = document.getElementById("btn");
+  const result = document.getElementById("result");
+
+  // 🧠 GENERATE CODE LIKE MK4821
+  function generateCode() {
+    return "MK" + Math.floor(1000 + Math.random() * 9000);
+  }
+
+  btn.onclick = async () => {
+    const longUrl = document.getElementById("longUrl").value.trim();
+    if (!longUrl) {
+      alert("Paste a link first");
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = "Creating...";
+
+    const code = generateCode();
+
+    try {
+      await setDoc(doc(db, "links", code), {
+        url: longUrl,
+        clicks: 0,
+        createdAt: Date.now()
+      });
+
+      const shortLink = `${location.origin}/${code}`;
+
+      result.innerHTML = `
+        ✅ Short link created:<br>
+        <a href="${shortLink}" target="_blank">${shortLink}</a>
+      `;
+    } catch (e) {
+      alert("Error creating link");
+      console.error(e);
+    }
+
+    btn.disabled = false;
+    btn.innerText = "Shorten";
+  };
+</script>
+
+</body>
+</html>
